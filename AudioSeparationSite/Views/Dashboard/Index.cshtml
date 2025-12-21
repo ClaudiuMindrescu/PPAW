@@ -1,0 +1,58 @@
+@model IEnumerable<AudioSeparationSite.Models.Plan>
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<section class="grid gap-10">
+    <div class="text-center">
+        <h2 class="text-3xl font-bold mb-3">Bine ai venit la <span class="text-zinc-700">AudioSplit</span></h2>
+        <p class="text-zinc-600 max-w-2xl mx-auto">Separă vocalul de instrumental și alte opțiuni — simulare educațională. Alege un plan și autentifică-te pentru a „procesa” fișiere.</p>
+        <div class="mt-5 space-x-3">
+            @if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                <a href="/Home/Index" class="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700">Mergi la procesare</a>
+            }
+            else
+            {
+                <a href="/account/login" class="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700">Login</a>
+                <a href="/account/register" class="px-4 py-2 rounded-xl bg-white border text-sm font-semibold rounded-xl">Creează cont</a>
+            }
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6" id="features">
+        <div class="bg-white rounded-2xl shadow p-6">
+            <h3 class="font-semibold mb-1">Separare Vocal</h3>
+            <p class="text-sm text-zinc-600">Urcă un fișier și primești (simulat) track-uri separate: Vocal și Instrumental.</p>
+        </div>
+        <div class="bg-white rounded-2xl shadow p-6">
+            <h3 class="font-semibold mb-1">Istoric Joburi</h3>
+            <p class="text-sm text-zinc-600">Ținem minte ultimele procesări pe contul tău (simulare).</p>
+        </div>
+        <div class="bg-white rounded-2xl shadow p-6">
+            <h3 class="font-semibold mb-1">Limită Zilnică</h3>
+            <p class="text-sm text-zinc-600">Planurile controlează câte fișiere poți procesa pe zi.</p>
+        </div>
+    </div>
+
+    <div class="grid gap-3" id="plans">
+        <h3 class="text-xl font-semibold">Planuri</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+            @foreach (var p in Model)
+            {
+                <div class="bg-white rounded-2xl shadow p-6">
+                    <div class="text-sm text-zinc-500">@p.Name</div>
+                    <div class="text-3xl font-bold my-2">@p.Price.ToString("0.##") <span class="text-base font-normal">@p.Currency</span></div>
+                    <div class="text-sm text-zinc-600 mb-4">Limită: @p.DailyLimit / zi</div>
+                    @if (User?.Identity?.IsAuthenticated ?? false)
+                    {
+                        <a href="/billing/checkout?planId=@p.Id" class="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700">Upgrade la @p.Name</a>
+                    }
+                    else
+                    {
+                        <a href="/account/register" class="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700">Începe gratuit</a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>

@@ -1,0 +1,44 @@
+@model AudioSeparationSite.Models.AudioJob
+@{
+    ViewData["Title"] = "Procesare în curs";
+}
+<div class="max-w-md mx-auto bg-white rounded-2xl shadow p-6">
+    <h2 class="text-xl font-semibold mb-2">Procesăm fișierul tău (simulare)</h2>
+    <p class="text-sm text-zinc-600 mb-4">
+        Job #@Model.Id — @System.IO.Path.GetFileName(Model.InputPath ?? "fișier_audio")
+    </p>
+
+    <div class="mb-3 text-sm text-zinc-600">
+        Te rog așteaptă ~8 secunde cât „separăm” vocalul de instrumental.
+    </div>
+
+    <div class="w-full bg-zinc-200 rounded-full h-2 overflow-hidden mb-2">
+        <div id="progressBar" class="h-2 bg-zinc-900" style="width:0%"></div>
+    </div>
+    <div class="text-xs text-zinc-500" id="progressText">0%</div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var p = 0;
+            var bar = document.getElementById('progressBar');
+            var txt = document.getElementById('progressText');
+
+            var interval = setInterval(function () {
+                p += 10;
+                if (p > 100) { p = 100; }
+                bar.style.width = p + '%';
+                txt.textContent = p + '%';
+                if (p === 100) {
+                    clearInterval(interval);
+                }
+            }, 800); // 0.8s * 10 = 8 secunde
+
+            // după 8 secunde mergem la Finalize
+            setTimeout(function () {
+                window.location.href = '@Url.Action("Finalize", "Home", new { id = Model.Id })';
+            }, 8000);
+        })();
+    </script>
+}

@@ -1,0 +1,63 @@
+@model IEnumerable<AudioSeparationSite.Models.AudioJob>
+@{
+    ViewData["Title"] = "Acasă";
+    var plan = ViewData["PlanName"]?.ToString() ?? "No Plan";
+    var limit = (int)(ViewData["Limit"] ?? 0);
+    var used = (int)(ViewData["Used"] ?? 0);
+    var msg = TempData["Message"] as string;
+}
+@section Scripts{}
+<div class="grid gap-6">
+    <div class="bg-white rounded-2xl shadow p-6">
+        <h2 class="text-lg font-semibold mb-2">Planul tău: <span class="font-bold">@plan</span></h2>
+        <p class="text-sm text-zinc-600 mb-4">Consum zilnic: <span class="font-medium">@used</span> / <span class="font-medium">@limit</span></p>
+        <form class="flex items-center gap-3" action="/upload" method="post" enctype="multipart/form-data">
+            <input class="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-zinc-900 file:text-white file:text-sm file:font-semibold hover:file:bg-zinc-700" type="file" name="file" accept="audio/*" required />
+            <button class="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700" type="submit">Procesează</button>
+        </form>
+        @if (!string.IsNullOrEmpty(msg))
+        {
+            <div class="mt-4 text-green-700 bg-green-100 border border-green-200 rounded-xl px-3 py-2">@msg</div>
+        }
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6">
+        <h3 class="text-lg font-semibold mb-4">Ultimele joburi</h3>
+        <div class="divide-y">
+    @foreach (var j in Model)
+    {
+        <div class="py-3">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="text-sm font-medium">
+                        @System.IO.Path.GetFileName(j.InputPath ?? "audio.wav")
+                    </div>
+                    <div class="text-xs text-zinc-500">
+                        Job #@j.Id — @j.Status —
+                        @j.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
+                    </div>
+                </div>
+            </div>
+
+            @if (j.Status == "done")
+            {
+                <div class="mt-2 flex flex-wrap gap-2 text-xs">
+                    <button class="px-3 py-1 rounded-full border text-zinc-700">
+                        Descarcă vocal (@j.OutputVocalsPath)
+                    </button>
+                    <button class="px-3 py-1 rounded-full border text-zinc-700">
+                        Descarcă back (@j.OutputInstrumentalPath)
+                    </button>
+                </div>
+            }
+            else if (j.Status == "processing")
+            {
+                <div class="mt-2 text-xs text-zinc-500">
+                    În curs de procesare...
+                </div>
+            }
+        </div>
+    }
+</div>
+    </div>
+</div>

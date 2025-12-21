@@ -1,0 +1,31 @@
+@model AudioSeparationSite.Models.Plan
+@{
+    ViewData["Title"] = "Plată";
+}
+<div class="max-w-lg mx-auto bg-white rounded-2xl shadow p-6">
+    <h2 class="text-xl font-semibold mb-2">Plată (simulare) — @Model.Name</h2>
+    <p class="text-sm text-zinc-600 mb-4">Vei face upgrade la planul <strong>@Model.Name</strong> cu limită <strong>@Model.DailyLimit/zi</strong>. Preț: <strong>@Model.Price.ToString("0.##") @Model.Currency</strong>.</p>
+
+    <form method="post" action="/billing/checkout" class="grid gap-3">
+        <input type="hidden" name="planId" value="@Model.Id" />
+        <div>
+            <label class="text-sm">Nume complet</label>
+            <input name="fullName" required class="w-full mt-1 border rounded-xl px-3 py-2" />
+        </div>
+        <div>
+            <label class="text-sm">Număr card</label>
+            <input name="cardNumber" required class="w-full mt-1 border rounded-xl px-3 py-2" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-sm">Expirare (MM/YY)</label>
+                <input name="expiry" required class="w-full mt-1 border rounded-xl px-3 py-2" />
+            </div>
+            <div>
+                <label class="text-sm">CVV</label>
+                <input name="cvv" required class="w-full mt-1 border rounded-xl px-3 py-2" />
+            </div>
+        </div>
+        <button class="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700" type="submit">Plătește</button>
+    </form>
+</div>

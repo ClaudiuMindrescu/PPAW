@@ -1,0 +1,146 @@
+@model AudioSeparationSite.Models.AccountViewModel
+@{
+    ViewData["Title"] = "Contul meu";
+}
+<div class="grid md:grid-cols-3 gap-6">
+    <div class="md:col-span-2 bg-white rounded-2xl shadow p-6">
+        <h2 class="text-xl font-semibold mb-4">Informații cont</h2>
+        <dl class="grid grid-cols-2 gap-y-2 text-sm">
+            <dt class="text-zinc-500">Email</dt>
+            <dd class="font-medium">@Model.User.Email</dd>
+
+            <dt class="text-zinc-500">Creat la</dt>
+            <dd>@Model.User.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</dd>
+
+            <dt class="text-zinc-500">Plan curent</dt>
+            <dd>
+                @if (Model.CurrentPlan is null)
+                {
+                    <span>Fără plan activ</span>
+                }
+                else
+                {
+                    <span>@Model.CurrentPlan.Name (@Model.TodayLimit/zi)</span>
+                }
+            </dd>
+
+            <dt class="text-zinc-500">Consum azi</dt>
+            <dd>@Model.TodayUsed / @Model.TodayLimit</dd>
+            <dt class="text-zinc-500">Expirare abonament</dt>
+<dd>
+    @if (Model.ExpiresAt == null)
+    {
+        <span>-</span>
+    }
+    else
+    {
+        <span>
+            @Model.ExpiresAt.Value.ToLocalTime().ToString("yyyy-MM-dd")
+            (@Model.DaysLeft zile rămase)
+        </span>
+    }
+</dd>
+
+        </dl>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+            <a href="/account/password" class="px-4 py-2 rounded-xl bg-white border text-sm font-semibold">
+                Schimbă parola
+            </a>
+
+           @if (Model.CurrentPlan != null && Model.CurrentPlan.Name != "Standard")
+{
+    <form method="post" action="/account/cancel-plan">
+        <button type="submit"
+                class="px-4 py-2 rounded-xl bg-white border text-sm font-semibold text-red-600"
+                onclick="return confirm('Ești sigur că vrei să renunți la abonamentul actual și să revii la planul Standard?');">
+            Revino la Standard
+        </button>
+    </form>
+}
+        </div>
+        <div class="mt-3">
+    <form method="post" action="/account/logout">
+        <button type="submit"
+                class="px-4 py-2 rounded-xl bg-white border text-sm font-semibold text-zinc-600 hover:text-zinc-900">
+            Logout
+        </button>
+    </form>
+</div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6">
+        <h3 class="text-lg font-semibold mb-3">Management plan</h3>
+        <p class="text-sm text-zinc-600 mb-3">
+            Alege un plan pentru a simula upgrade-ul. Vei fi dus la pagina de plată.
+        </p>
+        <div class="space-y-2 text-sm">
+            @foreach (var p in Model.AllPlans)
+            {
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="font-medium">@p.Name</div>
+                        <div class="text-xs text-zinc-500">
+                            @p.DailyLimit / zi — @p.Price.ToString("0.##") @p.Currency
+                        </div>
+                    </div>
+                    @if (Model.CurrentPlan != null && p.Id == Model.CurrentPlan.Id)
+                    {
+                        <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
+                            Activ
+                        </span>
+                    }
+                    else
+                    {
+                        <a href="/billing/checkout?planId=@p.Id"
+                           class="text-xs px-3 py-1 rounded-xl bg-zinc-900 text-white font-semibold hover:bg-zinc-700">
+                            Alege
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+
+        <hr class="my-4" />
+    </div>
+</div>
+
+<div class="mt-8 bg-white rounded-2xl shadow p-6">
+    <h3 class="text-lg font-semibold mb-3">Istoric plăți (simulat)</h3>
+    @if (!Model.RecentPayments.Any())
+    {
+        <p class="text-sm text-zinc-600">Nu ai plăți înregistrate încă.</p>
+    }
+    else
+    {
+        <div class="overflow-x-auto text-sm">
+            <table class="min-w-full">
+                <thead class="text-left text-xs text-zinc-500 border-b">
+                    <tr>
+                        <th class="py-2 pr-4">Data</th>
+                        <th class="py-2 pr-4">Plan</th>
+                        <th class="py-2 pr-4">Suma</th>
+                        <th class="py-2 pr-4">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.RecentPayments)
+                    {
+                        var planName = Model.AllPlans.FirstOrDefault(x => x.Id == p.PlanId)?.Name ?? "N/A";
+                        <tr class="border-b last:border-0">
+                            <td class="py-2 pr-4">@p.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                            <td class="py-2 pr-4">@planName</td>
+                            <td class="py-2 pr-4">@p.Amount.ToString("0.##") @p.Currency</td>
+                            <td class="py-2 pr-4">@p.Status</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+   
+
+</div>
+
+
+
