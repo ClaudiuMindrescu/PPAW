@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AudioSeparationAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e4e2c01146c6ab7401d42ffed826ebc86e19d8d7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c6454e816240002b888638ba33e7fbd244fed472")]
 [assembly: System.Reflection.AssemblyProductAttribute("AudioSeparationAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AudioSeparationAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
